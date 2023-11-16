@@ -1,17 +1,21 @@
+using CentricaBeerExchange.DataAccess;
+using CentricaBeerExchange.DataAccess.Handlers;
 using CentricaBeerExchange.Services;
+using Dapper;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using MySqlConnector;
+using System.Data;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
-IConfiguration config = builder.Configuration;
 
 JwtSettings jwtSettings = ReadConfigSection<JwtSettings>("JwtSettings");
-AuthSecrets authSecrets = ReadConfigSection<AuthSecrets>("AuthSecrets");
+string mysqlConnectionString = builder.Configuration.GetConnectionString("MySql")
+    ?? throw new ArgumentException(nameof(mysqlConnectionString));
 
 builder.Services
-    .AddSingleton(jwtSettings)
-    .AddSingleton(authSecrets);
+    .AddSingleton(jwtSettings);
 
 // Add services to the container.
 builder.Services
@@ -34,6 +38,7 @@ builder.Services
             ValidateIssuerSigningKey = true
         };
     });
+
 builder.Services.AddAuthorization();
 
 builder.Services
@@ -68,7 +73,18 @@ builder.Services
     });
 
 builder.Services
-    .AddScoped<ITokenService, TokenService>();
+    .AddScoped<IAuthService, AuthService>()
+    .AddScoped<ITokenService, TokenService>()
+    .AddScoped<IEmailService, EmailService>()
+    .AddScoped<ICodeGenerationService, CodeGenerationService>()
+    .AddScoped<ITimeProvider, CentricaBeerExchange.Services.TimeProvider>();
+
+builder.Services
+    .AddScoped<IAuthRepository, AuthRepository>();
+
+SqlMapper.AddTypeHandler(new DateTimeHandler());
+builder.Services
+    .AddTransient<IDbConnection>(_ => new MySqlConnection(mysqlConnectionString));
 
 WebApplication app = builder.Build();
 
@@ -85,6 +101,6 @@ app.Run();
 
 T ReadConfigSection<T>(string section)
 {
-    T? model = config.GetSection(section).Get<T>(opt => opt.BindNonPublicProperties = true);
+    T? model = builder.Configuration.GetSection(section).Get<T>(opt => opt.BindNonPublicProperties = true);
     return model ?? throw new InvalidOperationException($"Could not read section '{section}' as {typeof(T).Name}");
 }

@@ -11,5 +11,5 @@ public class DefaultController : ControllerBase
     [Authorize]
     [HttpGet("HelloAuthenticated")]
     public IActionResult HelloAuth()
-        => Ok(new { Message = $"Hello {User.Identity?.Name} User :D" });
+        => Ok(new { Message = $"Hello {User.Identity?.Name} :D" });
 }

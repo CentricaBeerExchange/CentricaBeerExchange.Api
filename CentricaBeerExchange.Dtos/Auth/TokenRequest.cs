@@ -3,12 +3,16 @@ namespace CentricaBeerExchange.Dtos.Auth;
 [DataContract]
 public class TokenRequest
 {
-    public TokenRequest(string clientId, string clientSecret)
+    public TokenRequest()
     {
-        ClientId = clientId;
-        ClientSecret = clientSecret;
+
+    }
+    public TokenRequest(string email, int verificationCode)
+    {
+        Email = email;
+        VerificationCode = verificationCode;
     }
 
-    [DataMember(Order = 1)] public string? ClientId { get; set; }
-    [DataMember(Order = 2)] public string? ClientSecret { get; set; }
+    [DataMember(Order = 1)] public string? Email { get; set; }
+    [DataMember(Order = 2)] public int? VerificationCode { get; set; }
 }

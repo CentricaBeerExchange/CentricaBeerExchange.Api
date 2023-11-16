@@ -2,23 +2,24 @@
 
   <PropertyGroup>
     <Nullable>enable</Nullable>
+    <LangVersion>12</LangVersion>
     <ImplicitUsings>enable</ImplicitUsings>
-    <TargetFramework>net7.0</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
     <UserSecretsId>CentricaBeerExchange.Api</UserSecretsId>
     <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
-    <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="7.0.13" />
-    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="7.0.13" />
+    <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="8.0.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.0" />
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.19.5" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\CentricaBeerExchange.DataAccess\CentricaBeerExchange.DataAccess.csproj" />
     <ProjectReference Include="..\CentricaBeerExchange.Dtos\CentricaBeerExchange.Dtos.csproj" />
     <ProjectReference Include="..\CentricaBeerExchange.Services\CentricaBeerExchange.Services.csproj" />
+    <ProjectReference Include="..\CentricaBeerExchange.DataAccess\CentricaBeerExchange.DataAccess.csproj" />
   </ItemGroup>
 
 </Project>

@@ -1,6 +1,7 @@
 using CentricaBeerExchange.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 IConfiguration config = builder.Configuration;
@@ -39,7 +40,32 @@ builder.Services
     .AddControllers();
 builder.Services
     .AddEndpointsApiExplorer()
-    .AddSwaggerGen();
+    .AddSwaggerGen(opt =>
+    {
+        opt.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+        {
+            In = ParameterLocation.Header,
+            Description = "Please enter a valid token",
+            Name = "Authorization",
+            Type = SecuritySchemeType.Http,
+            BearerFormat = "JWT",
+            Scheme = JwtBearerDefaults.AuthenticationScheme
+        });
+        opt.AddSecurityRequirement(new OpenApiSecurityRequirement
+        {
+            {
+                new OpenApiSecurityScheme
+                {
+                    Reference = new OpenApiReference
+                    {
+                        Type = ReferenceType.SecurityScheme,
+                        Id = JwtBearerDefaults.AuthenticationScheme
+                    }
+                },
+                Array.Empty<string>()
+            }
+        });
+    });
 
 builder.Services
     .AddScoped<ITokenService, TokenService>();

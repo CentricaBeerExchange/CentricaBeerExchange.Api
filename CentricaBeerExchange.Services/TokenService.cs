@@ -18,11 +18,11 @@ public class TokenService : ITokenService
     public TokenGenerationResult Generate(User user)
     {
         Guid tokenId = Guid.NewGuid();
+
         List<Claim> claims =
         [
             new Claim(AuthClaims.TokenId, tokenId.ToString()),
             new Claim(AuthClaims.UserId, user.Id.ToString()),
-            new Claim(ClaimTypes.Name, user.Name),
             new Claim(ClaimTypes.Email, user.Email),
             new Claim(ClaimTypes.Role, user.Role.ToString())
         ];
@@ -30,7 +30,7 @@ public class TokenService : ITokenService
         AccessToken accessToken = GenerateToken(claims);
         AccessToken refreshToken = GenerateRefreshToken();
 
-        return new TokenGenerationResult(user.Email, tokenId, accessToken, refreshToken);
+        return new TokenGenerationResult(tokenId, accessToken, refreshToken);
     }
 
     private AccessToken GenerateToken(IEnumerable<Claim> claims)

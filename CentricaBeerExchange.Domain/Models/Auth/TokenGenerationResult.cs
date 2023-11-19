@@ -6,16 +6,14 @@ public class TokenGenerationResult
     {
         Successful = false;
 
-        Email = string.Empty;
         ErrorMessage = errorMessage;
         IsUnauthorized = isUnauthorized;
     }
 
-    public TokenGenerationResult(string email, Guid tokenId, AccessToken accessToken, AccessToken refreshToken)
+    public TokenGenerationResult(Guid tokenId, AccessToken accessToken, AccessToken refreshToken)
     {
         Successful = true;
 
-        Email = email;
         TokenId = tokenId;
         AccessToken = accessToken;
         RefreshToken = refreshToken;
@@ -24,7 +22,6 @@ public class TokenGenerationResult
     }
 
     public bool Successful { get; }
-    public string Email { get; }
     public Guid TokenId { get; }
     public AccessToken? AccessToken { get; }
     public AccessToken? RefreshToken { get; }

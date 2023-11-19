@@ -12,5 +12,4 @@ public interface IAuthRepository
 
     Task<User> GetUserAsync(int id);
     Task<User> GetOrCreateUserAsync(string email);
-    Task<User> UpdateUserEmailAsync(int id, string newEmail);
 }

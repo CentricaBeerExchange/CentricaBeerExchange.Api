@@ -27,6 +27,16 @@ public static class IdentityExtensions
         return Guid.TryParse(strTokenId, out tokenId);
     }
 
+    public static bool TryGetUserId(this ClaimsPrincipal claimsPrincipal, [NotNullWhen(true)] out int userId)
+    {
+        userId = default;
+
+        if (!TryGetClaimsIdentity(claimsPrincipal, out ClaimsIdentity? claimsIdentity))
+            return false;
+
+        return TryGetUserId(claimsIdentity, out userId);
+    }
+
     public static bool TryGetUserId(this ClaimsIdentity claimsIdentity, [NotNullWhen(true)] out int userId)
     {
         userId = default;

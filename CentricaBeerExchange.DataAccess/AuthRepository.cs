@@ -93,7 +93,7 @@ public class AuthRepository : IAuthRepository
 
     public async Task<User> GetUserAsync(int id)
     {
-        string sqlSelect = "SELECT Id, Email, Role, Name, Department " +
+        string sqlSelect = "SELECT Id, Email, Role " +
                            "FROM beer_exchange.Users " +
                            "WHERE Id = @id";
 

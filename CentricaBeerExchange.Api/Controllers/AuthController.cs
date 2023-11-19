@@ -1,4 +1,4 @@
-namespace CentricaBeerExchange.Api.Controllers.Auth;
+namespace CentricaBeerExchange.Api.Controllers;
 
 [ApiController]
 [Route("api/auth")]
@@ -86,7 +86,7 @@ public class AuthController : ControllerBase
     }
 
     private DtoAuth.TokenResponse Map(TokenGenerationResult result)
-        => new(result.Email, Map(result.AccessToken!), Map(result.RefreshToken!));
+        => new(Map(result.AccessToken!), Map(result.RefreshToken!));
 
     private DtoAuth.AccessToken Map(AccessToken token)
         => new(token.Token, token.ExpiresAtUtc);

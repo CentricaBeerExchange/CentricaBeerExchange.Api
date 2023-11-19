@@ -6,26 +6,32 @@ public class TokenGenerationResult
     {
         Successful = false;
 
+        Email = string.Empty;
         ErrorMessage = errorMessage;
         IsUnauthorized = isUnauthorized;
-
-        AccessToken = string.Empty;
     }
 
-    public TokenGenerationResult(string accessToken, DateTime expiresAtUtc)
+    public TokenGenerationResult(string email, Guid tokenId, AccessToken accessToken, AccessToken refreshToken)
     {
         Successful = true;
 
+        Email = email;
+        TokenId = tokenId;
         AccessToken = accessToken;
-        ExpiresAtUtc = expiresAtUtc;
+        RefreshToken = refreshToken;
 
         ErrorMessage = string.Empty;
     }
 
     public bool Successful { get; }
-    public string AccessToken { get; }
-    public DateTime ExpiresAtUtc { get; }
+    public string Email { get; }
+    public Guid TokenId { get; }
+    public AccessToken? AccessToken { get; }
+    public AccessToken? RefreshToken { get; }
 
     public string ErrorMessage { get; }
     public bool IsUnauthorized { get; }
+
+    public TokenDetails AsTokenDetails(int userId)
+        => new(userId, TokenId.ToString(), AccessToken!.ExpiresAtUtc, RefreshToken!.Token, RefreshToken.ExpiresAtUtc);
 }

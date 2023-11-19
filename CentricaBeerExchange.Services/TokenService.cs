@@ -17,26 +17,29 @@ public class TokenService : ITokenService
 
     public TokenGenerationResult Generate(User user)
     {
+        Guid tokenId = Guid.NewGuid();
         List<Claim> claims =
         [
-            new Claim(ClaimTypes.Sid, user.Id.ToString()),
-            new Claim(ClaimTypes.Name, user.Email),
+            new Claim(AuthClaims.TokenId, tokenId.ToString()),
+            new Claim(AuthClaims.UserId, user.Id.ToString()),
+            new Claim(ClaimTypes.Name, user.Name),
             new Claim(ClaimTypes.Email, user.Email),
             new Claim(ClaimTypes.Role, user.Role.ToString())
         ];
 
-        (string accessToken, DateTime expiresAtUtc) = GenerateToken(claims);
+        AccessToken accessToken = GenerateToken(claims);
+        AccessToken refreshToken = GenerateRefreshToken();
 
-        return new TokenGenerationResult(accessToken, expiresAtUtc);
+        return new TokenGenerationResult(user.Email, tokenId, accessToken, refreshToken);
     }
 
-    private (string accessToken, DateTime expiresAtUtc) GenerateToken(IEnumerable<Claim> claims)
+    private AccessToken GenerateToken(IEnumerable<Claim> claims)
     {
         SymmetricSecurityKey authSigningKey = new(_jwtSettings.KeyBytes);
         SigningCredentials signingCredentials = new(authSigningKey, SecurityAlgorithms.HmacSha256);
 
         DateTime expiresAtUtc = _timeProvider.UtcNow
-            .Add(_jwtSettings.ExpiryTime)
+            .AddHours(_jwtSettings.TokenExpiryHours)
             .AddMilliseconds(100);
 
         SecurityTokenDescriptor tokenDescriptor = new()
@@ -51,6 +54,17 @@ public class TokenService : ITokenService
         JwtSecurityTokenHandler tokenHandler = new();
         SecurityToken secToken = tokenHandler.CreateToken(tokenDescriptor);
 
-        return (tokenHandler.WriteToken(secToken), expiresAtUtc);
+        return new AccessToken(tokenHandler.WriteToken(secToken), expiresAtUtc);
+    }
+
+    private AccessToken GenerateRefreshToken()
+    {
+        string refreshToken = Guid.NewGuid().ToString();
+
+        DateTime expiresAtUtc = _timeProvider.UtcNow
+            .AddDays(_jwtSettings.RefreshExpiryDays)
+            .AddMilliseconds(100);
+
+        return new AccessToken(refreshToken, expiresAtUtc);
     }
 }

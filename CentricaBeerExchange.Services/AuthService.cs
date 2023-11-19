@@ -79,10 +79,7 @@ public class AuthService : IAuthService
         User user = await _authRepository.GetUserAsync(userId);
 
         if (tokenDetails.RefreshExpiryUtc < _timeProvider.UtcNow)
-        {
-            await _authRepository.RemoveTokenAsync(user.Id);
             return new TokenGenerationResult($"Refresh Token has expired!", true);
-        }
 
         TokenGenerationResult tokenResult = _tokenService.Generate(user);
 

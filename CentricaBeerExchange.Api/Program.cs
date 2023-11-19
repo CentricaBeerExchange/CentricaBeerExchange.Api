@@ -1,3 +1,4 @@
+using CentricaBeerExchange.Api.Middleware;
 using CentricaBeerExchange.DataAccess;
 using CentricaBeerExchange.DataAccess.Handlers;
 using CentricaBeerExchange.Services;
@@ -77,10 +78,10 @@ builder.Services
     .AddScoped<ITokenService, TokenService>()
     .AddScoped<IEmailService, EmailService>()
     .AddScoped<ICodeGenerationService, CodeGenerationService>()
-    .AddScoped<ITimeProvider, CentricaBeerExchange.Services.TimeProvider>();
+    .AddSingleton<ITimeProvider, CentricaBeerExchange.Services.TimeProvider>();
 
 builder.Services
-    .AddScoped<IAuthRepository, AuthRepository>();
+    .AddTransient<IAuthRepository, AuthRepository>();
 
 SqlMapper.AddTypeHandler(new DateTimeHandler());
 builder.Services
@@ -94,6 +95,8 @@ app.UseSwagger()
 
 app.UseAuthentication();
 app.UseAuthorization();
+
+app.UseMiddleware<AuthValidationMiddleware>();
 
 app.MapControllers();
 

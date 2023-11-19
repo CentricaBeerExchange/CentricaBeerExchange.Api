@@ -105,5 +105,59 @@ public class AuthRepository : IAuthRepository
         return user ?? throw new InvalidOperationException($"User with Id '{id}' was NOT found!");
     }
 
-    public Task<User> UpdateUserEmailAsync(int id, string newEmail) => throw new System.NotImplementedException();
+    public async Task<User> UpdateUserEmailAsync(int id, string newEmail)
+    {
+        string sql = "UPDATE beer_exchange.Users " +
+                     "SET Email = @email " +
+                     "WHERE UserId = @userId";
+
+        await _connection.ExecuteAsync(
+            sql: sql,
+            param: new { userId = id, email = newEmail }
+        );
+
+        return await GetUserAsync(id);
+    }
+
+    public async Task<TokenDetails?> GetTokenAsync(Guid tokenId)
+    {
+        string sql = "SELECT UserId, TokenId, TokenExpiryUtc, RefreshToken, RefreshExpiryUtc " +
+                     "FROM beer_exchange.TokenDetails " +
+                     "WHERE TokenId = @tokenId";
+
+        TokenDetails? tokenDetails = await _connection.QuerySingleOrDefaultAsync<TokenDetails>(
+            sql: sql,
+            param: new { tokenId }
+        );
+
+        return tokenDetails;
+    }
+
+    public async Task UpsertTokenAsync(TokenDetails tokenDetails)
+    {
+        string sql = "REPLACE INTO beer_exchange.TokenDetails (UserId, TokenId, TokenExpiryUtc, RefreshToken, RefreshExpiryUtc) " +
+                     "VALUES (@UserId, @TokenId, @TokenExpiryUtc, @RefreshToken, @RefreshExpiryUtc)";
+
+        int changed = await _connection.ExecuteAsync(
+            sql: sql,
+            param: tokenDetails
+        );
+
+        if (changed < 1)
+            throw new InvalidOperationException("Token Details were not written to DB!");
+    }
+
+    public async Task<bool> RemoveTokenAsync(int userId)
+    {
+        string sql = "DELETE FROM beer_exchange.TokenDetails " +
+                     "WHERE UserId = @userId";
+
+        int changed = await _connection.ExecuteAsync(
+            sql: sql,
+            param: new { userId }
+        );
+
+        bool wasRemoved = changed >= 1;
+        return wasRemoved;
+    }
 }

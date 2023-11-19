@@ -4,4 +4,5 @@ global using CentricaBeerExchange.Domain.Repositories;
 global using CentricaBeerExchange.Domain.Services;
 global using Microsoft.AspNetCore.Authorization;
 global using Microsoft.AspNetCore.Mvc;
+global using System.Security.Claims;
 global using DtoAuth = CentricaBeerExchange.Dtos.Auth;

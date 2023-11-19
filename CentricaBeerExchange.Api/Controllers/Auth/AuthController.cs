@@ -11,7 +11,7 @@ public class AuthController : ControllerBase
         _authService = authService;
     }
 
-    [HttpPost("/login")]
+    [HttpPost("login")]
     public async Task<IActionResult> LoginAsync([FromBody] string? email)
     {
         if (string.IsNullOrWhiteSpace(email))
@@ -22,7 +22,7 @@ public class AuthController : ControllerBase
         return Ok();
     }
 
-    [HttpPost("/token")]
+    [HttpPost("token")]
     public async Task<IActionResult> GetTokenAsync([FromBody] DtoAuth.TokenRequest? request)
     {
         if (request is null)
@@ -34,14 +34,60 @@ public class AuthController : ControllerBase
         if (!request.VerificationCode.HasValue)
             return BadRequest("Verification Code was not provided!");
 
-        TokenGenerationResult result = await _authService.GetTokenAsync(request.Email, request.VerificationCode.Value);
+        TokenGenerationResult result = await _authService.GenerateTokenAsync(request.Email, request.VerificationCode.Value);
 
+        return ProcessResult(result);
+    }
+
+    [HttpPost("token/refresh")]
+    public async Task<IActionResult> RefreshTokenAsync([FromBody] string? refreshToken)
+    {
+        if (!User.TryGetClaimsIdentity(out ClaimsIdentity? identity))
+            return Unauthorized();
+
+        if (!identity.IsAuthenticated)
+            return Unauthorized();
+
+        if (string.IsNullOrWhiteSpace(refreshToken))
+            return BadRequest("Refresh Token was not provided!");
+
+        TokenGenerationResult result = await _authService.RefreshTokenAsync(identity, refreshToken);
+
+        return ProcessResult(result);
+    }
+
+    [Authorize]
+    [HttpDelete("token/revoke")]
+    public async Task<IActionResult> RevokeTokenAsync()
+    {
+        if (!User.TryGetClaimsIdentity(out ClaimsIdentity? identity))
+            return Unauthorized();
+
+        if (!identity.IsAuthenticated)
+            return Unauthorized();
+
+        bool wasRevoked = await _authService.RevokeTokenAsync(identity);
+
+        if (wasRevoked)
+            return Ok();
+
+        return StatusCode(StatusCodes.Status304NotModified);
+    }
+
+    private IActionResult ProcessResult(TokenGenerationResult result)
+    {
         if (result.Successful)
-            return Ok(new DtoAuth.AccessToken(request.Email, result.AccessToken, result.ExpiresAtUtc));
+            return Ok(Map(result));
 
         if (result.IsUnauthorized)
             return Unauthorized(result.ErrorMessage);
 
         return BadRequest(result.ErrorMessage);
     }
+
+    private DtoAuth.TokenResponse Map(TokenGenerationResult result)
+        => new(result.Email, Map(result.AccessToken!), Map(result.RefreshToken!));
+
+    private DtoAuth.AccessToken Map(AccessToken token)
+        => new(token.Token, token.ExpiresAtUtc);
 }

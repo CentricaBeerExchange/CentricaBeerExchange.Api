@@ -40,18 +40,18 @@ public class AuthController : ControllerBase
     }
 
     [HttpPost("token/refresh")]
-    public async Task<IActionResult> RefreshTokenAsync([FromBody] string? refreshToken)
+    public async Task<IActionResult> RefreshTokenAsync([FromBody] DtoAuth.RefreshRequest? request)
     {
-        if (!User.TryGetClaimsIdentity(out ClaimsIdentity? identity))
-            return Unauthorized();
+        if (request is null)
+            return BadRequest("Refresh Request was not provided!");
 
-        if (!identity.IsAuthenticated)
-            return Unauthorized();
+        if (string.IsNullOrWhiteSpace(request.AccessToken))
+            return BadRequest("Access Token was not provided!");
 
-        if (string.IsNullOrWhiteSpace(refreshToken))
+        if (string.IsNullOrWhiteSpace(request.RefreshToken))
             return BadRequest("Refresh Token was not provided!");
 
-        TokenGenerationResult result = await _authService.RefreshTokenAsync(identity, refreshToken);
+        TokenGenerationResult result = await _authService.RefreshTokenAsync(request.AccessToken, request.RefreshToken);
 
         return ProcessResult(result);
     }

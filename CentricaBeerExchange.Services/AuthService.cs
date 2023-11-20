@@ -60,13 +60,10 @@ public class AuthService : IAuthService
         }
     }
 
-    public async Task<TokenGenerationResult> RefreshTokenAsync(ClaimsIdentity identity, string refreshToken)
+    public async Task<TokenGenerationResult> RefreshTokenAsync(string accessToken, string refreshToken)
     {
-        if (!identity.TryGetTokenId(out Guid tokenId))
-            return new TokenGenerationResult($"Failed to get Token Id from authorized context!", true);
-
-        if (!identity.TryGetUserId(out int userId))
-            return new TokenGenerationResult($"Failed to get User Id from authorized context!", true);
+        if (!_tokenService.TryGetIdFromExpiredToken(accessToken, out Guid tokenId, out string? errorMessage))
+            return new TokenGenerationResult(errorMessage, true);
 
         TokenDetails? tokenDetails = await _authRepository.GetTokenAsync(tokenId);
 
@@ -76,7 +73,7 @@ public class AuthService : IAuthService
         if (!string.Equals(tokenDetails.RefreshToken, refreshToken, StringComparison.OrdinalIgnoreCase))
             return new TokenGenerationResult($"Invalid Refresh Token!", true);
 
-        User user = await _authRepository.GetUserAsync(userId);
+        User user = await _authRepository.GetUserAsync(tokenDetails.UserId);
 
         if (tokenDetails.RefreshExpiryUtc < _timeProvider.UtcNow)
             return new TokenGenerationResult($"Refresh Token has expired!", true);

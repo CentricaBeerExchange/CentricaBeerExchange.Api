@@ -1,3 +1,5 @@
+using CentricaBeerExchange.Domain.Models;
+
 namespace CentricaBeerExchange.DataAccess;
 
 public class ProfileRepository : IProfileRepository
@@ -33,20 +35,47 @@ public class ProfileRepository : IProfileRepository
         return profile;
     }
 
-    public async Task<Profile?> UpdateAsync(int userId, string updatedName, string updatedDepartment)
+    public async Task<Profile?> UpdateAsync(int userId, Profile updatedProfile)
     {
         string sql = "UPDATE beer_exchange.Users " +
-                     "SET Name = @updatedName, Department = @updatedDepartment " +
+                     "SET Name = @Name, Department = @Department, @Thumbnail" +
                      "WHERE Id = @userId";
+
+        Profile? afterUpdate = await CombineProfilesAsync(userId, updatedProfile);
+
+        if (afterUpdate is null)
+            return null;
 
         int updated = await _connection.ExecuteAsync(
             sql: sql,
-            param: new { userId, updatedName, updatedDepartment }
+            param: new
+            {
+                userId,
+                afterUpdate.Name,
+                afterUpdate.Department,
+                afterUpdate.Thumbnail
+            }
         );
 
         if (updated < 1)
             return null;
 
-        return await GetAsync(userId);
+        return afterUpdate;
+    }
+
+    private async Task<Profile?> CombineProfilesAsync(int userId, Profile updatedProfile)
+    {
+        Profile? existing = await GetAsync(userId);
+
+        if (existing is null)
+            return null;
+
+        return new Profile(
+            id: userId,
+            email: existing.Email,
+            name: updatedProfile.Name ?? existing.Name,
+            department: updatedProfile.Department ?? existing.Department,
+            thumbnail: updatedProfile.Thumbnail ?? existing.Thumbnail
+        );
     }
 }

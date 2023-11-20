@@ -1,3 +1,5 @@
+using CentricaBeerExchange.Domain.Models;
+
 namespace CentricaBeerExchange.Api.Controllers;
 
 [Authorize]
@@ -44,7 +46,8 @@ public class ProfileController : ControllerBase
         if (updatedProfile is null)
             return BadRequest("Provided Profile was empty!");
 
-        Profile? profile = await _profileRepository.UpdateAsync(userId, updatedProfile.Name, updatedProfile.Department);
+        Profile toUpdate = MapUpdate(updatedProfile);
+        Profile? profile = await _profileRepository.UpdateAsync(userId, toUpdate);
 
         if (profile is null)
             return NotFound();
@@ -85,6 +88,16 @@ public class ProfileController : ControllerBase
             userId: profile.UserId,
             email: profile.Email,
             name: profile.Name,
-            department: profile.Department
+            department: profile.Department,
+            thumbnail: profile.Thumbnail
+        );
+
+    private static Profile MapUpdate(Dto.Profile dtoProfile)
+        => new(
+            id: 0,
+            email: string.Empty,
+            name: dtoProfile.Name,
+            department: dtoProfile.Department,
+            thumbnail: dtoProfile.Thumbnail
         );
 }

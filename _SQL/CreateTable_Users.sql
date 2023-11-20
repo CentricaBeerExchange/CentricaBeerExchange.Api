@@ -13,6 +13,7 @@ CREATE TABLE beer_exchange.Users (
     Role        TINYINT         NOT NULL,
     Name        NVARCHAR(255)   NULL,
     Department  NVARCHAR(255)   NULL,
+    Thumbnail	MEDIUMTEXT		NULL,
     PRIMARY KEY (Id),
     UNIQUE INDEX UX_Users_Email (Email ASC),
     FOREIGN KEY (Role)  REFERENCES beer_exchange.UserRoles(Id)

@@ -18,7 +18,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\CentricaBeerExchange.Dtos\CentricaBeerExchange.Dtos.csproj" />
+    <ProjectReference Include="..\CentricaBeerExchange.Dto\CentricaBeerExchange.Dto\CentricaBeerExchange.Dto.csproj" />
     <ProjectReference Include="..\CentricaBeerExchange.Services\CentricaBeerExchange.Services.csproj" />
     <ProjectReference Include="..\CentricaBeerExchange.DataAccess\CentricaBeerExchange.DataAccess.csproj" />
   </ItemGroup>

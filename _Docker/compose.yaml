@@ -1,32 +1,31 @@
 services:
-  mysql:
-    container_name: mysql
-    image: mysql:5
+  postgres:
+    image: postgres
+    container_name: postgres_beer
     restart: unless-stopped
-    environment:
-      MYSQL_ROOT_PASSWORD: "dev1234"
-      MYSQL_DATABASE: "beer_exchange"
-      MYSQL_USER: "beer"
-      MYSQL_PASSWORD: "beer1234"
-    volumes:
-      - dbdata:/var/lib/mysql
     ports:
-      - 6033:3306
-
-  phpmyadmin:
-    container_name: phpmyadmin
-    image: phpmyadmin/phpmyadmin
-    restart: unless-stopped
+      - "5432:5432"
     environment:
-      PMA_HOST: mysql
-      PMA_PORT: 3306
-      PMA_ARBITRARY: 1
+      POSTGRES_USER: beer
+      POSTGRES_PASSWORD: "beer1234"
+      POSTGRES_DB: beer_exchange
+      PGDATA: /var/lib/postgresql/data
+    volumes:
+      - local_pgdata:/var/lib/postgresql/data
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: pgadmin4
+    restart: unless-stopped
     ports:
       - 8081:80
-    links:
-      - mysql
+    environment:
+      PGADMIN_DEFAULT_EMAIL: beer@beer.com
+      PGADMIN_DEFAULT_PASSWORD: beer4321
+    volumes:
+      - pgadmin-data:/var/lib/pgadmin
     depends_on:
-      - mysql
+      - postgres
 
 volumes:
-  dbdata:
+  local_pgdata:
+  pgadmin-data:

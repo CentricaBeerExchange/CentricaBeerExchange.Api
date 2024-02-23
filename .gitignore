@@ -164,3 +164,4 @@ packages/
 .vs/
 MigrationBackup/
 _cache/
+.vscode/

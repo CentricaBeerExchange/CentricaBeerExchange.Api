@@ -82,7 +82,8 @@ builder.Services
 
 builder.Services
     .AddTransient<IAuthRepository, AuthRepository>()
-    .AddTransient<IStylesRepository, StylesRepository>();
+    .AddTransient<IStylesRepository, StylesRepository>()
+    .AddTransient<IBreweriesRepository, BreweriesRepository>();
 
 SqlMapper.AddTypeHandler(new DateTimeHandler());
 builder.Services

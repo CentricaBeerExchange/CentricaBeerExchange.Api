@@ -1,3 +1,4 @@
+global using CentricaBeerExchange.Domain.Models;
 global using CentricaBeerExchange.Domain.Models.Auth;
 global using System.Diagnostics.CodeAnalysis;
 global using System.Text;

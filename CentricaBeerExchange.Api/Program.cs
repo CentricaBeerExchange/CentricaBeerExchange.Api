@@ -81,7 +81,8 @@ builder.Services
     .AddSingleton<ITimeProvider, CentricaBeerExchange.Services.TimeProvider>();
 
 builder.Services
-    .AddTransient<IAuthRepository, AuthRepository>();
+    .AddTransient<IAuthRepository, AuthRepository>()
+    .AddTransient<IStylesRepository, StylesRepository>();
 
 SqlMapper.AddTypeHandler(new DateTimeHandler());
 builder.Services

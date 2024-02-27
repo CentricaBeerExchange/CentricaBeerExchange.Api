@@ -82,6 +82,7 @@ builder.Services
 
 builder.Services
     .AddTransient<IAuthRepository, AuthRepository>()
+    .AddTransient<IProfileRepository, ProfileRepository>()
     .AddTransient<IStylesRepository, StylesRepository>()
     .AddTransient<IBreweriesRepository, BreweriesRepository>();
 

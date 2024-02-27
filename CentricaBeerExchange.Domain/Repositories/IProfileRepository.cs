@@ -1,5 +1,3 @@
-using CentricaBeerExchange.Domain.Models;
-
 namespace CentricaBeerExchange.Domain.Repositories;
 
 public interface IProfileRepository

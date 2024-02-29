@@ -1,5 +1,3 @@
-using CentricaBeerExchange.Domain.Models;
-
 namespace CentricaBeerExchange.DataAccess;
 
 public class ProfileRepository : IProfileRepository
@@ -71,11 +69,11 @@ public class ProfileRepository : IProfileRepository
             return null;
 
         return new Profile(
-            id: userId,
-            email: existing.Email,
-            name: updatedProfile.Name ?? existing.Name,
-            department: updatedProfile.Department ?? existing.Department,
-            thumbnail: updatedProfile.Thumbnail ?? existing.Thumbnail
+            Id: userId,
+            Email: existing.Email,
+            Name: updatedProfile.Name ?? existing.Name,
+            Department: updatedProfile.Department ?? existing.Department,
+            Thumbnail: updatedProfile.Thumbnail ?? existing.Thumbnail
         );
     }
 }

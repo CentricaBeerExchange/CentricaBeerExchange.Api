@@ -1,5 +1,3 @@
-using CentricaBeerExchange.Domain.Models;
-
 namespace CentricaBeerExchange.Api.Controllers;
 
 [Authorize]
@@ -32,7 +30,7 @@ public class ProfileController : ControllerBase
 
         return Ok(dtoProfile);
     }
-    
+
     [HttpPut("me")]
     [ProducesResponseType<Dto.Profile>(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -85,7 +83,7 @@ public class ProfileController : ControllerBase
 
     private static Dto.Profile Map(Profile profile)
         => new(
-            userId: profile.UserId,
+            userId: profile.Id,
             email: profile.Email,
             name: profile.Name,
             department: profile.Department,
@@ -94,10 +92,10 @@ public class ProfileController : ControllerBase
 
     private static Profile MapUpdate(Dto.Profile dtoProfile)
         => new(
-            id: 0,
-            email: string.Empty,
-            name: dtoProfile.Name,
-            department: dtoProfile.Department,
-            thumbnail: dtoProfile.Thumbnail
+            Id: 0,
+            Email: string.Empty,
+            Name: dtoProfile.Name,
+            Department: dtoProfile.Department,
+            Thumbnail: dtoProfile.Thumbnail
         );
 }

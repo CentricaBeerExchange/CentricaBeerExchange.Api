@@ -1,6 +1,6 @@
 namespace CentricaBeerExchange.DataAccess.Handlers;
 
-public class DateTimeHandler : SqlMapper.TypeHandler<DateTime>
+public class DateTimeTypeHandler : SqlMapper.TypeHandler<DateTime>
 {
     public override void SetValue(IDbDataParameter parameter, DateTime value)
     {

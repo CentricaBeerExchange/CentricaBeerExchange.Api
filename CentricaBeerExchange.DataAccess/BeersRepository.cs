@@ -129,16 +129,17 @@ FROM
 	INNER JOIN beer_exchange.Styles style
 		ON style.Id = beer.Style";
 
-    const string SQL_SELECT_ALL = $"{SQL_SELECT_BASE};";
+    const string SQL_SELECT_ALL = 
+$"{SQL_SELECT_BASE};";
 
     const string SQL_SELECT_SINGLE =
 $@"{SQL_SELECT_BASE}
-WHERE Id = @id;";
+WHERE beer.Id = @id;";
 
     const string SQL_INSERT =
 @"INSERT INTO beer_exchange.Beers (Name, Brewery, Style, Rating, ABV, UntappdId)
 VALUES (@name, @breweryId, @styleId, @rating, @abv, @untappdId);
-SELECT mysql_insert_id();";
+SELECT LAST_INSERT_ID();";
 
     const string SQL_UPDATE =
 @"UPDATE beer_exchange.Beers

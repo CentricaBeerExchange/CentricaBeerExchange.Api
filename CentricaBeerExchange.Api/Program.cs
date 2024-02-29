@@ -88,7 +88,10 @@ builder.Services
     .AddTransient<IBeersRepository, BeersRepository>()
     .AddTransient<ITastingsRepository, TastingsRepository>();
 
-SqlMapper.AddTypeHandler(new DateTimeHandler());
+SqlMapper.AddTypeHandler(new DateTimeTypeHandler());
+SqlMapper.AddTypeHandler(new DateOnlyTypeHandler());
+SqlMapper.AddTypeHandler(new TimeOnlyTypeHandler());
+
 builder.Services
     .AddTransient<IDbConnection>(_ => new MySqlConnection(mysqlConnectionString));
 

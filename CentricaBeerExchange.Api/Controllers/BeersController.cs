@@ -1,7 +1,7 @@
 namespace CentricaBeerExchange.Api.Controllers;
 
 [ApiController]
-[Route("api/breweries")]
+[Route("api/beers")]
 public class BeersController : ControllerBase
 {
     private readonly IBeersRepository _beersRepository;

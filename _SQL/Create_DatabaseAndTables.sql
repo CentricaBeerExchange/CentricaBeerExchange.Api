@@ -3,7 +3,7 @@
 ##===========================================================================
 DROP SCHEMA IF EXISTS beer_exchange;
 
-CREATE SCHEMA beer_test 
+CREATE SCHEMA beer_exchange 
 	DEFAULT CHARACTER SET utf8 
     COLLATE utf8_danish_ci;
 
@@ -48,7 +48,7 @@ CREATE TABLE beer_exchange.TokenDetails (
     RefreshToken        NVARCHAR(36)    NOT NULL,
     RefreshExpiryUtc    DATETIME        NOT NULL,
     PRIMARY KEY (UserId),
-    FOREIGN KEY (UserId) REFERENCES beer_exchange.Users(Id)
+    FOREIGN KEY (UserId) REFERENCES beer_exchange.Users(Id),
     CONSTRAINT UC_TokenDetails_TokenId UNIQUE (TokenId)
 );
 
@@ -73,9 +73,7 @@ CREATE TABLE beer_exchange.Breweries (
     CONSTRAINT PK_Breweries_Id
         PRIMARY KEY (Id),
     CONSTRAINT UX_Breweries_Name
-        UNIQUE (Name),
-    CONSTRAINT IX_Breweries_UntappdId
-        INDEX (UntappdId)
+        UNIQUE (Name)
 );
 CREATE INDEX IX_Breweries_UntappdId ON beer_exchange.Breweries (UntappdId);
 

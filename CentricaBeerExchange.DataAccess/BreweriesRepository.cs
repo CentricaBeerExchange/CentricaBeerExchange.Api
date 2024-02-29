@@ -39,7 +39,7 @@ public class BreweriesRepository : IBreweriesRepository
 
         string sql = "INSERT INTO beer_exchange.Breweries (Name, UntappdId, Location, Type, Thumbnail) " +
                      "VALUES (@name, @untappdId, @location, @type, @thumbnail); " +
-                     "SELECT mysql_insert_id()";
+                     "SELECT LAST_INSERT_ID();";
 
         int insertedId = await _connection.QuerySingleAsync<int>(
             sql: sql,
@@ -102,7 +102,7 @@ public class BreweriesRepository : IBreweriesRepository
 
         bool exists = await _connection.QuerySingleOrDefaultAsync<bool>(
             sql: sql,
-            param: new { untappdId, idToIgnore }
+            param: new { name, untappdId, idToIgnore }
         );
 
         return exists;

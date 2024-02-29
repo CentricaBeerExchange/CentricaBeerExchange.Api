@@ -37,7 +37,7 @@ public class TastingsRepository : ITastingsRepository
     {
         string sql = "INSERT INTO beer_exchange.Tastings (Date, Theme) " +
                      "VALUES (@date, @theme);" +
-                     "SELECT mysql_insert_id()";
+                     "SELECT LAST_INSERT_ID();";
 
         int insertedId = await _connection.QuerySingleOrDefaultAsync<int>(
             sql: sql,

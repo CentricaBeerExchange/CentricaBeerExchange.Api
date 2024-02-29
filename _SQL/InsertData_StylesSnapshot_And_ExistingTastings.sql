@@ -1,3 +1,5 @@
+SET SESSION SQL_MODE="NO_AUTO_VALUE_ON_ZERO";
+
 INSERT INTO beer_exchange.Styles (Id, Name, IsActive)
 VALUES
     (  0, "N/A", 1),
@@ -270,8 +272,8 @@ VALUES
     (393, "Farmhouse Ale - Kornøl", 1),
     (394, "Lager - Smoked", 1),
     (395, "Cider - Applewine", 1);
-
-INSERT INTO beer_exchange.Breweries (Name, UntappdId)
+    
+INSERT INTO beer_exchange.Breweries (Id, Name, UntappdId)
 VALUES
     ( 0, "N/A", NULL),
     ( 1, "Ārpus Brewing Co.", "ArpusBrewing"),

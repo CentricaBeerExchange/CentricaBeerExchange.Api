@@ -52,7 +52,7 @@ public class BreweriesController : ControllerBase
 
     [HttpPut("{id:int}")]
     [ProducesResponseType<Dto.Brewery>(StatusCodes.Status200OK)]
-    public async Task<IActionResult> PostAsync([FromRoute] int id, [FromBody] Dto.Brewery brewery)
+    public async Task<IActionResult> PutAsync([FromRoute] int id, [FromBody] Dto.Brewery brewery)
     {
         Brewery updBrewery = await _breweriesRepository.UpdateAsync(id,
             brewery.Name,

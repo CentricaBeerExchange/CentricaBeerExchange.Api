@@ -8,6 +8,7 @@ public class TastingParticipantsRepository : ITastingParticipantsRepository
     public TastingParticipantsRepository(IDbConnection connection, IBeersRepository beersRepository)
     {
         _connection = connection;
+        _connection.Open();
         _beersRepository = beersRepository;
     }
 
@@ -44,10 +45,15 @@ public class TastingParticipantsRepository : ITastingParticipantsRepository
         string sql = "REPLACE INTO beer_exchange.TastingParticipants (TastingId, UserId, BeerId) " +
                      "VALUES (@TastingId, @UserId, @BeerId)";
 
+        using IDbTransaction transaction = _connection.BeginTransaction();
+
         await _connection.ExecuteAsync(
             sql: sql,
-            param: registrations
+            param: registrations,
+            transaction: transaction
         );
+
+        transaction.Commit();
 
         TastingParticipant[] participants = await GetAsync(tastingId);
         return participants;

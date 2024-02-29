@@ -7,6 +7,7 @@ public class BeersRepository : IBeersRepository
     public BeersRepository(IDbConnection connection)
     {
         _connection = connection;
+        _connection.Open();
     }
 
     public async Task<Beer[]> GetAsync()
@@ -48,10 +49,15 @@ public class BeersRepository : IBeersRepository
         if (await ExistsAsync(untappdId))
             throw new InvalidOperationException("Another Beer with that Untappd Id already exists!");
 
+        using IDbTransaction transaction = _connection.BeginTransaction();
+
         int insertedId = await _connection.QuerySingleAsync<int>(
             sql: SQL_INSERT,
-            param: new { name, breweryId, styleId, rating, abv, untappdId }
+            param: new { name, breweryId, styleId, rating, abv, untappdId },
+            transaction: transaction
         );
+
+        transaction.Commit();
 
         Beer? beer = await GetAsync(insertedId);
         return beer ?? throw new InvalidOperationException("Beer NOT found after Insert!");

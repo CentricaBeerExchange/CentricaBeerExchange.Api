@@ -7,6 +7,7 @@ public class BreweriesRepository : IBreweriesRepository
     public BreweriesRepository(IDbConnection connection)
     {
         _connection = connection;
+        _connection.Open();
     }
 
     public async Task<Brewery[]> GetAsync()
@@ -41,10 +42,15 @@ public class BreweriesRepository : IBreweriesRepository
                      "VALUES (@name, @untappdId, @location, @type, @thumbnail); " +
                      "SELECT LAST_INSERT_ID();";
 
+        using IDbTransaction transaction = _connection.BeginTransaction();
+
         int insertedId = await _connection.QuerySingleAsync<int>(
             sql: sql,
-            param: new { name, untappdId, location, type, thumbnail }
+            param: new { name, untappdId, location, type, thumbnail },
+            transaction: transaction
         );
+
+        transaction.Commit();
 
         Brewery? brewery = await GetAsync(insertedId);
         return brewery ?? throw new InvalidOperationException("Brewery NOT found after Insert!");

@@ -7,6 +7,7 @@ public class StylesRepository : IStylesRepository
     public StylesRepository(IDbConnection connection)
     {
         _connection = connection;
+        _connection.Open();
     }
 
     public async Task<Style[]> GetAsync()
@@ -60,10 +61,15 @@ public class StylesRepository : IStylesRepository
         string sql = "REPLACE INTO beer_exchange.Styles (Id, Name, IsActive) " +
                      "VALUES (@Id, @Name, 1)";
 
+        using IDbTransaction transaction = _connection.BeginTransaction();
+
         await _connection.ExecuteAsync(
             sql: sql,
-            param: styles
+            param: styles,
+            transaction: transaction
         );
+
+        transaction.Commit();
 
         short[] ids = styles.Select(s => s.Id).ToArray();
         return await GetAsync(ids);

@@ -7,6 +7,7 @@ public class TastingsRepository : ITastingsRepository
     public TastingsRepository(IDbConnection connection)
     {
         _connection = connection;
+        _connection.Open();
     }
 
     public async Task<Tasting[]> GetAsync()
@@ -39,10 +40,15 @@ public class TastingsRepository : ITastingsRepository
                      "VALUES (@date, @theme);" +
                      "SELECT LAST_INSERT_ID();";
 
+        using IDbTransaction transaction = _connection.BeginTransaction();
+
         int insertedId = await _connection.QuerySingleOrDefaultAsync<int>(
             sql: sql,
-            param: new { date, theme }
+            param: new { date, theme },
+            transaction: transaction
         );
+
+        transaction.Commit();
 
         Tasting? tasting = await GetAsync(insertedId);
         return tasting ?? throw new InvalidOperationException("Tasting NOT found after insert!");

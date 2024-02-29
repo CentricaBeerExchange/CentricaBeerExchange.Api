@@ -16,7 +16,7 @@ public class BeersController : ControllerBase
     public async Task<IActionResult> GetAllAsync()
     {
         Beer[] beers = await _beersRepository.GetAsync();
-        Dto.Beer[] dtoBeers = Map(beers);
+        Dto.Beer[] dtoBeers = beers.ToDto();
 
         return Ok(dtoBeers);
     }
@@ -31,7 +31,7 @@ public class BeersController : ControllerBase
         if (beer is null)
             return NotFound();
 
-        Dto.Beer dtoBeer = Map(beer);
+        Dto.Beer dtoBeer = beer.ToDto();
         return Ok(dtoBeer);
     }
 
@@ -48,7 +48,7 @@ public class BeersController : ControllerBase
             beer.UntappdId
         );
 
-        Dto.Beer dtoNewBeer = Map(newBeer);
+        Dto.Beer dtoNewBeer = newBeer.ToDto();
         return Ok(dtoNewBeer);
     }
 
@@ -65,7 +65,7 @@ public class BeersController : ControllerBase
             beer.UntappdId
         );
 
-        Dto.Beer dtoUpdBeer = Map(updBeer);
+        Dto.Beer dtoUpdBeer = updBeer.ToDto();
         return Ok(dtoUpdBeer);
     }
 
@@ -76,30 +76,4 @@ public class BeersController : ControllerBase
         await _beersRepository.DeleteAsync(id);
         return Ok();
     }
-
-    private static Dto.Beer[] Map(IEnumerable<Beer> beers)
-        => beers?.Select(Map).ToArray() ?? [];
-
-    private static Dto.Beer Map(Beer beer)
-        => new(
-            id: beer.Id,
-            name: beer.Name,
-            brewery: Map(beer.Brewery),
-            style: Map(beer.Style),
-            rating: beer.Rating,
-            abv: beer.ABV,
-            untappdId: beer.UntappdId
-        );
-
-    private static Dto.BreweryMeta Map(BreweryMeta brewery)
-        => new(
-            id: brewery.Id,
-            name: brewery.Name
-        );
-
-    private static Dto.Style Map(Style style)
-        => new(
-            id: style.Id,
-            name: style.Name
-        );
 }

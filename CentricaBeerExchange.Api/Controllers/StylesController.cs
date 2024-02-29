@@ -18,7 +18,7 @@ public class StylesController : ControllerBase
     public async Task<IActionResult> GetAllAsync()
     {
         Style[] styles = await _stylesRepository.GetAsync();
-        Dto.Style[] dtoStyles = styles.Select(Map).ToArray();
+        Dto.Style[] dtoStyles = styles.ToDto();
 
         return Ok(dtoStyles);
     }
@@ -33,7 +33,7 @@ public class StylesController : ControllerBase
         if (style is null)
             return NotFound($"Style with Id '{id}' was NOT found!");
 
-        Dto.Style dtoStyle = Map(style);
+        Dto.Style dtoStyle = style.ToDto();
         return Ok(dtoStyle);
     }
 
@@ -41,10 +41,10 @@ public class StylesController : ControllerBase
     [ProducesResponseType<Dto.Style>(StatusCodes.Status200OK)]
     public async Task<IActionResult> PostAsync([FromBody] Dto.Style style)
     {
-        Style domainStyle = Map(style);
+        Style domainStyle = style.ToDomain();
         Style updStyle = await _stylesRepository.UpsertAsync(domainStyle);
 
-        Dto.Style dtoUpdStyle = Map(updStyle);
+        Dto.Style dtoUpdStyle = updStyle.ToDto();
         return Ok(dtoUpdStyle);
     }
 
@@ -52,10 +52,10 @@ public class StylesController : ControllerBase
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<IActionResult> PostAsync([FromBody] Dto.Style[] styles)
     {
-        Style[] domainStyles = styles.Select(Map).ToArray();
+        Style[] domainStyles = styles.ToDomain();
         Style[] updStyles = await _stylesRepository.UpsertAsync(domainStyles);
 
-        Dto.Style[] dtoUpdStyle = updStyles.Select(Map).ToArray();
+        Dto.Style[] dtoUpdStyle = updStyles.ToDto();
         return Ok(dtoUpdStyle);
     }
 
@@ -75,10 +75,4 @@ public class StylesController : ControllerBase
         await _stylesRepository.DeleteAsync(parsedIds);
         return Ok();
     }
-
-    private static Dto.Style Map(Style style)
-        => new(style.Id, style.Name);
-
-    private static Style Map(Dto.Style dtoStyle)
-        => new(dtoStyle.Id, dtoStyle.Name);
 }

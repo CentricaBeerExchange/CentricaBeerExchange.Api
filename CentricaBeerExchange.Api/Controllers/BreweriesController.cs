@@ -16,7 +16,7 @@ public class BreweriesController : ControllerBase
     public async Task<IActionResult> GetAllAsync()
     {
         Brewery[] breweries = await _breweriesRepository.GetAsync();
-        Dto.Brewery[] dtoBreweries = breweries.Select(Map).ToArray();
+        Dto.Brewery[] dtoBreweries = breweries.ToDto();
 
         return Ok(dtoBreweries);
     }
@@ -30,7 +30,7 @@ public class BreweriesController : ControllerBase
         if (brewery is null)
             return NotFound();
 
-        Dto.Brewery dtoBrewery = Map(brewery);
+        Dto.Brewery dtoBrewery = brewery.ToDto();
         return Ok(dtoBrewery);
     }
 
@@ -46,7 +46,7 @@ public class BreweriesController : ControllerBase
             brewery.Thumbnail
         );
 
-        Dto.Brewery dtoNewBrewery = Map(newBrewery);
+        Dto.Brewery dtoNewBrewery = newBrewery.ToDto();
         return Ok(dtoNewBrewery);
     }
 
@@ -62,7 +62,7 @@ public class BreweriesController : ControllerBase
             brewery.Thumbnail
         );
 
-        Dto.Brewery dtoUpdBrewery = Map(updBrewery);
+        Dto.Brewery dtoUpdBrewery = updBrewery.ToDto();
         return Ok(dtoUpdBrewery);
     }
 
@@ -73,7 +73,4 @@ public class BreweriesController : ControllerBase
         await _breweriesRepository.DeleteAsync(id);
         return Ok();
     }
-
-    private static Dto.Brewery Map(Brewery brewery)
-        => new(brewery.Id, brewery.Name, brewery.UntappdId, brewery.Location, brewery.Type, brewery.Thumbnail);
 }

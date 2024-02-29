@@ -1,11 +1,11 @@
+using CentricaBeerExchange.Api.Mappers;
+
 namespace CentricaBeerExchange.Api.Controllers;
 
 [ApiController]
 [Route("api/styles")]
 public class StylesController : ControllerBase
 {
-    private static readonly char[] _listSeparator = [','];
-    private static readonly StringSplitOptions _listSplitOptions = StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries;
     private readonly IStylesRepository _stylesRepository;
 
     public StylesController(IStylesRepository stylesRepository)
@@ -71,7 +71,7 @@ public class StylesController : ControllerBase
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<IActionResult> DeleteAsync([FromQuery] string ids)
     {
-        short[] parsedIds = ids.Split(_listSeparator, _listSplitOptions).Select(short.Parse).ToArray();
+        short[] parsedIds = ids.SplitAndParse(short.Parse);
         await _stylesRepository.DeleteAsync(parsedIds);
         return Ok();
     }

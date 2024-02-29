@@ -18,6 +18,18 @@ public class BeersRepository : IBeersRepository
         return beers;
     }
 
+    public async Task<Beer[]> GetAsync(int[] ids)
+    {
+        IEnumerable<DbBeer> query = await _connection.QueryAsync<DbBeer>(
+            sql: SQL_SELECT_MANY,
+            param: new { ids }
+        );
+
+        Beer[] beers = query?.Select(Map).ToArray() ?? [];
+
+        return beers;
+    }
+
     public async Task<Beer?> GetAsync(int id)
     {
         DbBeer? dbBeer = await _connection.QuerySingleOrDefaultAsync<DbBeer>(
@@ -131,6 +143,10 @@ FROM
 
     const string SQL_SELECT_ALL = 
 $"{SQL_SELECT_BASE};";
+
+    const string SQL_SELECT_MANY =
+$@"{SQL_SELECT_BASE}
+WHERE beer.Id IN @ids;";
 
     const string SQL_SELECT_SINGLE =
 $@"{SQL_SELECT_BASE}

@@ -2,6 +2,12 @@ namespace CentricaBeerExchange.Api.Mappers;
 
 public static class DtoMapper
 {
+    private static readonly char[] _listSeparator = [','];
+    private static readonly StringSplitOptions _listSplitOptions = StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries;
+
+    public static T[] SplitAndParse<T>(this string str, Func<string, T> parseFunc)
+        => str.Split(_listSeparator, _listSplitOptions).Select(parseFunc).ToArray();
+
     public static Dto.Beer[] ToDto(this IEnumerable<Beer> beers)
         => beers?.Select(ToDto).ToArray() ?? [];
 
@@ -52,5 +58,15 @@ public static class DtoMapper
             id: tasting.Id,
             date: tasting.Date,
             theme: tasting.Theme
+        );
+
+    public static Dto.TastingParticipant[] ToDto(this IEnumerable<TastingParticipant> participants)
+        => participants?.Select(ToDto).ToArray() ?? [];
+
+    public static Dto.TastingParticipant ToDto(this TastingParticipant participant)
+        => new(
+            id: participant.Id,
+            name: participant.Name,
+            beer: ToDto(participant.Beer)
         );
 }

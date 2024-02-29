@@ -10,4 +10,14 @@ public static class DomainMapper
             Id: dtoStyle.Id,
             Name: dtoStyle.Name
         );
+
+    public static TastingParticipantRegistration[] ToDomain(this Dto.TastingParticipantRegistration[] dtoRegs, int tastingId)
+        => dtoRegs?.Select(ToDomain).ToArray() ?? [];
+
+    public static TastingParticipantRegistration ToDomain(this Dto.TastingParticipantRegistration dtoReg, int tastingId)
+        => new(
+            TastingId: tastingId, 
+            UserId: dtoReg.UserId, 
+            BeerId: dtoReg.BeerId
+        );
 }

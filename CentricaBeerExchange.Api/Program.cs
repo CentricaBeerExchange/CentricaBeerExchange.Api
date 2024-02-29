@@ -86,7 +86,8 @@ builder.Services
     .AddTransient<IStylesRepository, StylesRepository>()
     .AddTransient<IBreweriesRepository, BreweriesRepository>()
     .AddTransient<IBeersRepository, BeersRepository>()
-    .AddTransient<ITastingsRepository, TastingsRepository>();
+    .AddTransient<ITastingsRepository, TastingsRepository>()
+    .AddTransient<ITastingParticipantsRepository, TastingParticipantsRepository>();
 
 SqlMapper.AddTypeHandler(new DateTimeTypeHandler());
 SqlMapper.AddTypeHandler(new DateOnlyTypeHandler());

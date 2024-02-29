@@ -103,7 +103,9 @@ CREATE TABLE beer_exchange.Tastings (
     Date        Date            NOT NULL,
     Theme       NVARCHAR(100)   NULL,
     CONSTRAINT PK_Tastings_Id
-        PRIMARY KEY (Id)
+        PRIMARY KEY (Id),
+    CONSTRAINT UX_Tastings_Date
+        UNIQUE (Date)
 );
 
 CREATE TABLE beer_exchange.TastingParticipants (

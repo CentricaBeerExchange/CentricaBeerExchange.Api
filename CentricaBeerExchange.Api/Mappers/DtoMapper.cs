@@ -43,4 +43,14 @@ public static class DtoMapper
             id: style.Id,
             name: style.Name
         );
+
+    public static Dto.Tasting[] ToDto(this IEnumerable<Tasting> tastings)
+        => tastings?.Select(ToDto).ToArray() ?? [];
+
+    public static Dto.Tasting ToDto(this Tasting tasting)
+        => new(
+            id: tasting.Id,
+            date: tasting.Date,
+            theme: tasting.Theme
+        );
 }

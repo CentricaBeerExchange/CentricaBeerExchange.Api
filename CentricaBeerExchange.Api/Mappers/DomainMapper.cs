@@ -16,8 +16,18 @@ public static class DomainMapper
 
     public static TastingParticipantRegistration ToDomain(this Dto.TastingParticipantRegistration dtoReg, int tastingId)
         => new(
-            TastingId: tastingId, 
-            UserId: dtoReg.UserId, 
+            TastingId: tastingId,
+            UserId: dtoReg.UserId,
             BeerId: dtoReg.BeerId
+        );
+
+    public static TastingVoteRegistration[] ToDomain(this Dto.TastingVoteRegistration[] dtoVoteRegs, int tastingId)
+        => dtoVoteRegs?.Select(ToDomain).ToArray() ?? [];
+
+    public static TastingVoteRegistration ToDomain(this Dto.TastingVoteRegistration dtoVoteReg, int tastingId)
+        => new(
+            TastingId: tastingId,
+            UserId: dtoVoteReg.UserId,
+            VotedUserId: dtoVoteReg.VotedUserId
         );
 }

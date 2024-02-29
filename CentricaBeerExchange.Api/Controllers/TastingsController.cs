@@ -5,12 +5,14 @@ namespace CentricaBeerExchange.Api.Controllers;
 public class TastingsController : ControllerBase
 {
     private readonly ITastingsRepository _tastingsRepository;
-    private readonly ITastingParticipantsRepository _tastingParticipantsRepository;
+    private readonly ITastingParticipantsRepository _participantsRepository;
+    private readonly ITastingVotesRepository _votesRepository;
 
-    public TastingsController(ITastingsRepository tastingsRepository, ITastingParticipantsRepository tastingParticipantsRepository)
+    public TastingsController(ITastingsRepository tastingsRepository, ITastingParticipantsRepository participantsRepository, ITastingVotesRepository votesRepository)
     {
         _tastingsRepository = tastingsRepository;
-        _tastingParticipantsRepository = tastingParticipantsRepository;
+        _participantsRepository = participantsRepository;
+        _votesRepository = votesRepository;
     }
 
     [HttpGet("")]
@@ -55,17 +57,17 @@ public class TastingsController : ControllerBase
     [ProducesResponseType<Dto.TastingParticipant[]>(StatusCodes.Status200OK)]
     public async Task<IActionResult> GetParticipantsAsync([FromRoute] int id)
     {
-        TastingParticipant[] participants = await _tastingParticipantsRepository.GetAsync(id);
+        TastingParticipant[] participants = await _participantsRepository.GetAsync(id);
         Dto.TastingParticipant[] dtoParticipants = participants.ToDto();
         return Ok(dtoParticipants);
     }
 
-    [HttpPost("{id:int}/participants")]
+    [HttpPut("{id:int}/participants")]
     [ProducesResponseType<Dto.TastingParticipant[]>(StatusCodes.Status200OK)]
     public async Task<IActionResult> AddOrUpdateParticipantsAsync([FromRoute] int id, [FromBody] Dto.TastingParticipantRegistration[] registrations)
     {
         TastingParticipantRegistration[] domainRegistrations = registrations.ToDomain(id);
-        TastingParticipant[] updParticipants = await _tastingParticipantsRepository.AddOrUpdateAsync(id, domainRegistrations);
+        TastingParticipant[] updParticipants = await _participantsRepository.AddOrUpdateAsync(id, domainRegistrations);
         Dto.TastingParticipant[] dtoParticipants = updParticipants.ToDto();
         return Ok(dtoParticipants);
     }
@@ -75,7 +77,35 @@ public class TastingsController : ControllerBase
     public async Task<IActionResult> RemoveParticipantsAsync([FromRoute] int id, [FromQuery] string userIds)
     {
         int[] parsedIds = userIds.SplitAndParse(int.Parse);
-        await _tastingParticipantsRepository.RemoveAsync(id, parsedIds);
+        await _participantsRepository.RemoveAsync(id, parsedIds);
+        return Ok();
+    }
+
+    [HttpGet("{id:int}/votes")]
+    [ProducesResponseType<Dto.TastingVote[]>(StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetVotesAsync([FromRoute] int id)
+    {
+        TastingVote[] votes = await _votesRepository.GetAsync(id);
+        Dto.TastingVote[] dtoVotes = votes.ToDto();
+        return Ok(dtoVotes);
+    }
+
+    [HttpPut("{id:int}/votes")]
+    [ProducesResponseType<Dto.TastingVote[]>(StatusCodes.Status200OK)]
+    public async Task<IActionResult> AddOrUpdateVotesAsync([FromRoute] int id, [FromBody] Dto.TastingVoteRegistration[] registrations)
+    {
+        TastingVoteRegistration[] domainRegistrations = registrations.ToDomain(id);
+        TastingVote[] updVotes = await _votesRepository.AddOrUpdateAsync(id, domainRegistrations);
+        Dto.TastingVote[] dtoUpdVotes = updVotes.ToDto();
+        return Ok(dtoUpdVotes);
+    }
+
+    [HttpDelete("{id:int}/votes")]
+    [ProducesResponseType<Dto.TastingVote[]>(StatusCodes.Status200OK)]
+    public async Task<IActionResult> RemovedVotesAsync([FromRoute] int id, [FromQuery] string userIds)
+    {
+        int[] parsedIds = userIds.SplitAndParse(int.Parse);
+        await _votesRepository.RemoveAsync(id, parsedIds);
         return Ok();
     }
 }

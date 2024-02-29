@@ -69,4 +69,15 @@ public static class DtoMapper
             name: participant.Name,
             beer: ToDto(participant.Beer)
         );
+
+    public static Dto.TastingVote[] ToDto(this IEnumerable<TastingVote> votes)
+        => votes?.Select(ToDto).ToArray() ?? [];
+
+    public static Dto.TastingVote ToDto(this TastingVote vote)
+        => new(
+            userId: vote.UserId,
+            userName: vote.UserName,
+            votedUserId: vote.VotedUserId,
+            votedUserName: vote.VotedUserName
+        );
 }

@@ -11,7 +11,7 @@ public class ProfileRepository : IProfileRepository
 
     public async Task<Profile[]> GetAsync()
     {
-        string sql = "SELECT Id, Email, Name, Department " +
+        string sql = "SELECT Id, Email, Name " +
                      "FROM beer_exchange.Users";
 
         IEnumerable<Profile> query = await _connection.QueryAsync<Profile>(sql);
@@ -21,7 +21,7 @@ public class ProfileRepository : IProfileRepository
 
     public async Task<Profile?> GetAsync(int userId)
     {
-        string sql = "SELECT Id, Email, Name, Department " +
+        string sql = "SELECT Id, Email, Name " +
                      "FROM beer_exchange.Users " +
                      "WHERE Id = @userId";
 
@@ -36,7 +36,7 @@ public class ProfileRepository : IProfileRepository
     public async Task<Profile?> UpdateAsync(int userId, Profile updatedProfile)
     {
         string sql = "UPDATE beer_exchange.Users " +
-                     "SET Name = @Name, Department = @Department, @Thumbnail" +
+                     "SET Name = @Name, @Thumbnail" +
                      "WHERE Id = @userId";
 
         Profile? afterUpdate = await CombineProfilesAsync(userId, updatedProfile);
@@ -50,7 +50,6 @@ public class ProfileRepository : IProfileRepository
             {
                 userId,
                 afterUpdate.Name,
-                afterUpdate.Department,
                 afterUpdate.Thumbnail
             }
         );
@@ -72,7 +71,6 @@ public class ProfileRepository : IProfileRepository
             Id: userId,
             Email: existing.Email,
             Name: updatedProfile.Name ?? existing.Name,
-            Department: updatedProfile.Department ?? existing.Department,
             Thumbnail: updatedProfile.Thumbnail ?? existing.Thumbnail
         );
     }

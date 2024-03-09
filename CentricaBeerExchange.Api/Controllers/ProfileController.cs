@@ -86,7 +86,6 @@ public class ProfileController : ControllerBase
             userId: profile.Id,
             email: profile.Email,
             name: profile.Name,
-            department: profile.Department,
             thumbnail: profile.Thumbnail
         );
 
@@ -95,7 +94,6 @@ public class ProfileController : ControllerBase
             Id: 0,
             Email: string.Empty,
             Name: dtoProfile.Name,
-            Department: dtoProfile.Department,
             Thumbnail: dtoProfile.Thumbnail
         );
 }

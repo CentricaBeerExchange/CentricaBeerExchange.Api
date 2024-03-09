@@ -64,7 +64,7 @@ public class AuthRepository : IAuthRepository
 
     public async Task<User> GetOrCreateUserAsync(string email)
     {
-        string sqlSelect = "SELECT Id, Email, Role, Name, Department " +
+        string sqlSelect = "SELECT Id, Email, Role, Name " +
                            "FROM beer_exchange.Users " +
                            "WHERE Email = @email";
 

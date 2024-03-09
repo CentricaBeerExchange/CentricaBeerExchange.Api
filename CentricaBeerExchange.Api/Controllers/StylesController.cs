@@ -2,6 +2,7 @@ using CentricaBeerExchange.Api.Mappers;
 
 namespace CentricaBeerExchange.Api.Controllers;
 
+[Authorize]
 [ApiController]
 [Route("api/styles")]
 public class StylesController : ControllerBase
@@ -38,6 +39,7 @@ public class StylesController : ControllerBase
     }
 
     [HttpPost("")]
+    [MinimumRole(ERole.Editor)]
     [ProducesResponseType<Dto.Style>(StatusCodes.Status200OK)]
     public async Task<IActionResult> PostAsync([FromBody] Dto.Style style)
     {
@@ -49,6 +51,7 @@ public class StylesController : ControllerBase
     }
 
     [HttpPost("bulk")]
+    [MinimumRole(ERole.Editor)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<IActionResult> PostAsync([FromBody] Dto.Style[] styles)
     {
@@ -60,6 +63,7 @@ public class StylesController : ControllerBase
     }
 
     [HttpDelete("{id:int}")]
+    [MinimumRole(ERole.Admin)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<IActionResult> DeleteAsync([FromRoute] short id)
     {
@@ -68,6 +72,7 @@ public class StylesController : ControllerBase
     }
 
     [HttpDelete("bulk")]
+    [MinimumRole(ERole.Admin)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<IActionResult> DeleteAsync([FromQuery] string ids)
     {

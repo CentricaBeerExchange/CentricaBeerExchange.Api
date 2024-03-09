@@ -1,5 +1,6 @@
 namespace CentricaBeerExchange.Api.Controllers;
 
+[Authorize]
 [ApiController]
 [Route("api/beers")]
 public class BeersController : ControllerBase
@@ -53,6 +54,7 @@ public class BeersController : ControllerBase
     }
 
     [HttpPut("{id:int}")]
+    [MinimumRole(ERole.Editor)]
     [ProducesResponseType<Dto.Beer>(StatusCodes.Status200OK)]
     public async Task<IActionResult> PutAsync([FromRoute] int id, [FromBody] Dto.Beer beer)
     {
@@ -70,6 +72,7 @@ public class BeersController : ControllerBase
     }
 
     [HttpDelete("{id:int}")]
+    [MinimumRole(ERole.Admin)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<IActionResult> DeleteAsync([FromRoute] int id)
     {

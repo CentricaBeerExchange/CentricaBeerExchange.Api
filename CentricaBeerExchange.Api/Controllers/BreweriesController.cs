@@ -1,5 +1,6 @@
 namespace CentricaBeerExchange.Api.Controllers;
 
+[Authorize]
 [ApiController]
 [Route("api/breweries")]
 public class BreweriesController : ControllerBase
@@ -51,6 +52,7 @@ public class BreweriesController : ControllerBase
     }
 
     [HttpPut("{id:int}")]
+    [MinimumRole(ERole.Editor)]
     [ProducesResponseType<Dto.Brewery>(StatusCodes.Status200OK)]
     public async Task<IActionResult> PutAsync([FromRoute] int id, [FromBody] Dto.Brewery brewery)
     {

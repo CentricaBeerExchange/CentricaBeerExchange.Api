@@ -1,5 +1,6 @@
 namespace CentricaBeerExchange.Api.Controllers;
 
+[Authorize]
 [ApiController]
 [Route("api/tastings")]
 public class TastingsController : ControllerBase
@@ -26,6 +27,7 @@ public class TastingsController : ControllerBase
     }
 
     [HttpPost("")]
+    [MinimumRole(ERole.Editor)]
     [ProducesResponseType<Dto.Tasting>(StatusCodes.Status200OK)]
     public async Task<IActionResult> PostAsync([FromBody] Dto.Tasting tasting)
     {
@@ -36,6 +38,7 @@ public class TastingsController : ControllerBase
     }
 
     [HttpPut("{id:int}")]
+    [MinimumRole(ERole.Editor)]
     [ProducesResponseType<Dto.Tasting>(StatusCodes.Status200OK)]
     public async Task<IActionResult> PutAsync([FromRoute] int id, [FromBody] Dto.Tasting tasting)
     {
@@ -46,6 +49,7 @@ public class TastingsController : ControllerBase
     }
 
     [HttpDelete("{id:int}")]
+    [MinimumRole(ERole.Admin)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<IActionResult> DeleteAsync([FromRoute] int id)
     {
@@ -63,6 +67,7 @@ public class TastingsController : ControllerBase
     }
 
     [HttpPut("{id:int}/participants")]
+    [MinimumRole(ERole.Editor)]
     [ProducesResponseType<Dto.TastingParticipant[]>(StatusCodes.Status200OK)]
     public async Task<IActionResult> AddOrUpdateParticipantsAsync([FromRoute] int id, [FromBody] Dto.TastingParticipantRegistration[] registrations)
     {
@@ -73,6 +78,7 @@ public class TastingsController : ControllerBase
     }
 
     [HttpDelete("{id:int}/participants")]
+    [MinimumRole(ERole.Editor)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<IActionResult> RemoveParticipantsAsync([FromRoute] int id, [FromQuery] string userIds)
     {
@@ -91,6 +97,7 @@ public class TastingsController : ControllerBase
     }
 
     [HttpPut("{id:int}/votes")]
+    [MinimumRole(ERole.Editor)]
     [ProducesResponseType<Dto.TastingVote[]>(StatusCodes.Status200OK)]
     public async Task<IActionResult> AddOrUpdateVotesAsync([FromRoute] int id, [FromBody] Dto.TastingVoteRegistration[] registrations)
     {
@@ -101,6 +108,7 @@ public class TastingsController : ControllerBase
     }
 
     [HttpDelete("{id:int}/votes")]
+    [MinimumRole(ERole.Editor)]
     [ProducesResponseType<Dto.TastingVote[]>(StatusCodes.Status200OK)]
     public async Task<IActionResult> RemovedVotesAsync([FromRoute] int id, [FromQuery] string userIds)
     {

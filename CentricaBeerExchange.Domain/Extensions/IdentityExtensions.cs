@@ -1,5 +1,3 @@
-using System.Diagnostics.CodeAnalysis;
-
 namespace System.Security.Claims;
 
 public static class IdentityExtensions
@@ -45,5 +43,13 @@ public static class IdentityExtensions
             return false;
 
         return int.TryParse(strUserId, out userId);
+    }
+
+    public static bool IsUserIdMatchingExpected(this ClaimsPrincipal claimsPrincipal, int expectedUserId)
+    {
+        if (!claimsPrincipal.TryGetUserId(out int userId))
+            return false;
+
+        return userId == expectedUserId;
     }
 }

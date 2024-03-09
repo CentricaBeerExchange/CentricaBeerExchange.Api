@@ -66,6 +66,28 @@ public class TastingsController : ControllerBase
         return Ok(dtoParticipants);
     }
 
+    [HttpPost("{id:int}/register")]
+    [ProducesResponseType<Dto.TastingParticipant[]>(StatusCodes.Status200OK)]
+    [ProducesResponseType<string>(StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> RegisterParticipationAsync([FromRoute] int id, [FromBody] Dto.TastingParticipantRegistration registration)
+    {
+        if (!User.IsUserIdMatchingExpected(registration.UserId))
+            return BadRequest("Cannot register anyone but yourself!");
+
+        return await AddOrUpdateParticipantsAsync(id, [registration]);
+    }
+
+    [HttpDelete("{id:int}/unregister")]
+    [ProducesResponseType<Dto.TastingParticipant[]>(StatusCodes.Status200OK)]
+    [ProducesResponseType<string>(StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> UnregisterParticipationAsync([FromRoute] int id)
+    {
+        if (!User.TryGetUserId(out int userId))
+            return StatusCode(StatusCodes.Status500InternalServerError, "Could not get User id!");
+
+        return await RemoveParticipantsAsync(id, $"{userId}");
+    }
+
     [HttpPut("{id:int}/participants")]
     [MinimumRole(ERole.Editor)]
     [ProducesResponseType<Dto.TastingParticipant[]>(StatusCodes.Status200OK)]
@@ -94,6 +116,20 @@ public class TastingsController : ControllerBase
         TastingVote[] votes = await _votesRepository.GetAsync(id);
         Dto.TastingVote[] dtoVotes = votes.ToDto();
         return Ok(dtoVotes);
+    }
+
+    [HttpPut("{id:int}/vote")]
+    [ProducesResponseType<Dto.TastingVote[]>(StatusCodes.Status200OK)]
+    [ProducesResponseType<string>(StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> VoteAsync([FromRoute] int id, [FromBody] Dto.TastingVoteRegistration registration)
+    {
+        if (!User.IsUserIdMatchingExpected(registration.UserId))
+            return BadRequest("Cannot vote on someone elses behalf!");
+
+        if (User.IsUserIdMatchingExpected(registration.VotedUserId))
+            return BadRequest("Cannot vote for yourself!");
+
+        return await AddOrUpdateVotesAsync(id, [registration]);
     }
 
     [HttpPut("{id:int}/votes")]

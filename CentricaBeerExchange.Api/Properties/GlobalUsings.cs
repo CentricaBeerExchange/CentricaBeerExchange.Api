@@ -1,3 +1,4 @@
+global using CentricaBeerExchange.Api.Attributes;
 global using CentricaBeerExchange.Api.Mappers;
 global using CentricaBeerExchange.Domain.Models;
 global using CentricaBeerExchange.Domain.Models.Auth;

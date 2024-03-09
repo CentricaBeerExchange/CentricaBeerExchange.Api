@@ -23,10 +23,10 @@ public class AuthValidationMiddleware
 
     private async Task<bool> ShouldInvokeNextAsync(HttpContext context)
     {
-        if (!RequiresAuthorization(context, out string[] requiredRoles))
+        if (!RequiresAuthorization(context, out ERole minRequiredRole))
             return true;
 
-        (bool isAuthorized, int statusCode, string errorMessage) = await IsAuthorizedAsync(context, requiredRoles);
+        (bool isAuthorized, int statusCode, string errorMessage) = await IsAuthorizedAsync(context, minRequiredRole);
 
         if (isAuthorized)
             return true;
@@ -35,13 +35,19 @@ public class AuthValidationMiddleware
         return false;
     }
 
-    private static bool RequiresAuthorization(HttpContext context, out string[] requiredRoles)
+    private static bool RequiresAuthorization(HttpContext context, out ERole minRequiredRole)
     {
+        minRequiredRole = ERole.None;
+
         Endpoint? endpoint = context.GetEndpoint();
         EndpointMetadataCollection? metadate = endpoint?.Metadata;
-        AuthorizeAttribute? authorize = metadate?.GetMetadata<AuthorizeAttribute>();
-        requiredRoles = ParseRoles(authorize);
-        return authorize is not null;
+        AuthorizeAttribute? authorizeAttribute = metadate?.GetMetadata<AuthorizeAttribute>();
+        
+        MinimumRoleAttribute? minRoleAttribute = metadate?.GetMetadata<MinimumRoleAttribute>();        
+        if (minRoleAttribute is not null)
+            minRequiredRole = minRoleAttribute.MinimumRequiredUserRole;
+
+        return authorizeAttribute is not null;
     }
 
     private static string[] ParseRoles(AuthorizeAttribute? authorize)
@@ -55,7 +61,7 @@ public class AuthValidationMiddleware
         return authorize.Roles.Split(CommaDelimiter, StringSplitOptions.RemoveEmptyEntries);
     }
 
-    private async Task<(bool isAuthorized, int statusCode, string errorMessage)> IsAuthorizedAsync(HttpContext context, string[] requiredRoles)
+    private async Task<(bool isAuthorized, int statusCode, string errorMessage)> IsAuthorizedAsync(HttpContext context, ERole minRequiredRole)
     {
         if (!context.User.TryGetClaimsIdentity(out ClaimsIdentity? claimsIdentity))
             return (false, StatusCodes.Status401Unauthorized, "Failed to get Identity!");
@@ -64,7 +70,7 @@ public class AuthValidationMiddleware
             return (false, StatusCodes.Status401Unauthorized, "User is NOT authenticated!");
 
         if (!claimsIdentity.TryGetTokenId(out Guid tokenId))
-            return (false, StatusCodes.Status401Unauthorized, "Claims did NOT contain User Id!");
+            return (false, StatusCodes.Status401Unauthorized, "Claims did NOT contain Token Id!");
 
         TokenDetails? tokenDetails = await _authRepository.GetTokenAsync(tokenId);
 
@@ -74,32 +80,32 @@ public class AuthValidationMiddleware
         if (tokenDetails.TokenExpiryUtc < _timeProvider.UtcNow)
             return (false, StatusCodes.Status401Unauthorized, "Auth Token as expired!");
 
-        if (MissingRequiredRole(claimsIdentity, requiredRoles, out string roleErrorMessage))
+        if (MissingRequiredRole(claimsIdentity, minRequiredRole, out string roleErrorMessage))
             return (false, StatusCodes.Status401Unauthorized, roleErrorMessage);
 
         return (true, StatusCodes.Status200OK, string.Empty);
     }
 
-    private static bool MissingRequiredRole(ClaimsIdentity claimsIdentity, string[] requiredRoles, out string errorMessage)
+    private static bool MissingRequiredRole(ClaimsIdentity claimsIdentity, ERole minRequiredRole, out string errorMessage)
     {
         errorMessage = string.Empty;
 
-        if (requiredRoles.Length == 0)
+        if (minRequiredRole == ERole.None)
             return false;
 
-        if (!claimsIdentity.TryGetClaimValue(ClaimTypes.Role, out string? role))
+        if (!claimsIdentity.TryGetClaimValue(ClaimTypes.Role, out string? claimRole))
         {
-            errorMessage = "Claims dod NOT contain Role!";
+            errorMessage = "Claims did NOT contain Role!";
             return true;
         }
 
-        if (!requiredRoles.Contains(role, StringComparer.OrdinalIgnoreCase))
+        if (!Enum.TryParse(claimRole, true, out ERole role))
         {
-            errorMessage = "Missing required role!";
+            errorMessage = "Claims Role is NOT valid!";
             return true;
         }
 
-        return false;
+        return role < minRequiredRole;
     }
 
     private static Task HandleUnauthorizedAsync(HttpContext context, int statusCode, string errorMessage)

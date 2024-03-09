@@ -12,4 +12,10 @@ public class DefaultController : ControllerBase
     [HttpGet("HelloAuthenticated")]
     public IActionResult HelloAuth()
         => Ok(new { Message = $"Hello {User.Identity?.Name} :D" });
+
+    [Authorize]
+    [MinimumRole(ERole.Admin)]
+    [HttpGet("HelloAuthenticated/MinimumRole")]
+    public IActionResult HelloAuthWithMinRole()
+        => Ok(new { Message = $"Hello {ERole.Admin} {User.Identity?.Name} :D" });
 }

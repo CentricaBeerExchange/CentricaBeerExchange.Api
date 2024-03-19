@@ -1,5 +1,4 @@
 using Microsoft.IdentityModel.Tokens;
-using System.Diagnostics.CodeAnalysis;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 
@@ -25,6 +24,7 @@ public class TokenService : ITokenService
             new Claim(AuthClaims.TokenId, tokenId.ToString()),
             new Claim(AuthClaims.UserId, user.Id.ToString()),
             new Claim(ClaimTypes.Email, user.Email),
+            new Claim(ClaimTypes.Name, user.Name),
             new Claim(ClaimTypes.Role, user.Role.ToString())
         ];
 

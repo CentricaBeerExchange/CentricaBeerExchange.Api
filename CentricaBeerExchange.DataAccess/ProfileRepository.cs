@@ -11,7 +11,7 @@ public class ProfileRepository : IProfileRepository
 
     public async Task<Profile[]> GetAsync()
     {
-        string sql = "SELECT Id, Email, Name " +
+        string sql = "SELECT Id, Email, Name, Thumbnail " +
                      "FROM beer_exchange.Users";
 
         IEnumerable<Profile> query = await _connection.QueryAsync<Profile>(sql);
@@ -21,7 +21,7 @@ public class ProfileRepository : IProfileRepository
 
     public async Task<Profile?> GetAsync(int userId)
     {
-        string sql = "SELECT Id, Email, Name " +
+        string sql = "SELECT Id, Email, Name, Thumbnail  " +
                      "FROM beer_exchange.Users " +
                      "WHERE Id = @userId";
 

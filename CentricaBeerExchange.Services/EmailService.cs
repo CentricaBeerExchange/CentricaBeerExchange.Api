@@ -45,7 +45,7 @@ public class EmailService : IEmailService
             wait: Azure.WaitUntil.Completed,
             senderAddress: _senderAddress,
             recipientAddress: email,
-            subject: "Verification code for Centria Beer Exchange",
+            subject: "Verification code for Centrica Beer Exchange",
             htmlContent: html,
             plainText
         );

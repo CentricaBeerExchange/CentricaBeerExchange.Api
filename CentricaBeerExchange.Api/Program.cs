@@ -11,12 +11,19 @@ using System.Data;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
-JwtSettings jwtSettings = ReadConfigSection<JwtSettings>("JwtSettings");
 string mysqlConnectionString = builder.Configuration.GetConnectionString("MySql")
     ?? throw new ArgumentException(nameof(mysqlConnectionString));
+string emailConnectionString = builder.Configuration.GetConnectionString("Email")
+    ?? throw new ArgumentException(nameof(emailConnectionString));
+
+JwtSettings jwtSettings = ReadConfigSection<JwtSettings>("JwtSettings");
+
+EmailSettings emailSettings = ReadConfigSection<EmailSettings>("EmailSettings");
+emailSettings.AttachConnectionString(emailConnectionString);
 
 builder.Services
-    .AddSingleton(jwtSettings);
+    .AddSingleton(jwtSettings)
+    .AddSingleton(emailSettings);
 
 // Add services to the container.
 builder.Services

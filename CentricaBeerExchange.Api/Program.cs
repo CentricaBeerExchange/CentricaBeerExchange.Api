@@ -13,6 +13,8 @@ WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
 string mysqlConnectionString = builder.Configuration.GetConnectionString("MySql")
     ?? throw new ArgumentException(nameof(mysqlConnectionString));
+string mongoDbConnectionString = builder.Configuration.GetConnectionString("MongoDb")
+    ?? throw new ArgumentException(nameof(mongoDbConnectionString));
 string emailConnectionString = builder.Configuration.GetConnectionString("Email")
     ?? throw new ArgumentException(nameof(emailConnectionString));
 
@@ -88,7 +90,8 @@ builder.Services
     .AddSingleton<ITimeProvider, CentricaBeerExchange.Services.TimeProvider>();
 
 builder.Services
-    .AddTransient<IAuthRepository, AuthRepository>()
+    //.AddTransient<IAuthRepository, AuthRepository>()
+    .AddTransient<IAuthRepository, CentricaBeerExchange.DataAccess.MongoDb.MongoDbAuthRepository>()
     .AddTransient<IProfileRepository, ProfileRepository>()
     .AddTransient<IStylesRepository, StylesRepository>()
     .AddTransient<IBreweriesRepository, BreweriesRepository>()
@@ -103,6 +106,13 @@ SqlMapper.AddTypeHandler(new TimeOnlyTypeHandler());
 
 builder.Services
     .AddTransient<IDbConnection>(_ => new MySqlConnection(mysqlConnectionString));
+
+builder.Services
+    .AddSingleton<MongoDB.Driver.IMongoClient, MongoDB.Driver.MongoClient>(p =>
+    {
+        return new MongoDB.Driver.MongoClient(mongoDbConnectionString);
+    })
+    .AddTransient(p => p.GetRequiredService<MongoDB.Driver.IMongoClient>().GetDatabase("BeerExchange"));
 
 WebApplication app = builder.Build();
 
